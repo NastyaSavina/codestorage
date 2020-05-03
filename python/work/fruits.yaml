@@ -1,0 +1,30 @@
+dag:
+  dag_id: 'TEST_CORE_IMPORT_TransactionCustomer'
+  schedule_interval: '50 4 * * *'
+  concurrency: 1
+  default_args:
+    owner: 'ufedarenka'
+    email: 'uladzislau_fedarenka@epam.com'
+    start_date: 2020-01-07T05:00:00Z
+    end_date: 2020-04-07T20:00:00Z
+    depends_on_past: False
+    email_on_failure: False
+    email_on_retry: False
+    email_on_success: False
+    retries: 0
+    retry_delay: 0
+    provide_context: True
+    catchup: True
+    do_xcom_push: True
+    
+clean_prod_notebook:
+  existing_cluster_id: '1217-074050-fief15'
+  notebook_task:
+    notebook_path: '/Users/uladzislau.fedarenka@burberry.com/Import_TransactionCustomer/CleanProd'
+    base_parameters:
+      database: 'ufedarenka'
+      target_table: 'transaction_customer'
+      target_raw_table: 'transaction_customer_raw'
+      target_dir: 'dbfs:/tctest/transaction_customer'
+      target_raw_dir: 'dbfs:/tctest/transaction_customer_raw'
+      PROCESS_DATE: '{{ ds }}'

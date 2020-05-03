@@ -1,0 +1,64 @@
+dag:
+  dag_id: 'Testing_CI_Import_NpsClosedLoop'
+  description: 'Daily import Medallia Closed Loop data from sft to db and to s3'
+  schedule_interval: '0 */2 * * *'
+  concurrency: 1
+  max_active_runs: 1
+  default_args:
+    owner: 'azaparozhtsa'
+    email: 'aliaksandr_zaparozhtsau@epam.com'
+    dependsOnPast: False
+    start_date: 2020-03-16T08:50:00Z
+    end_date: 2050-03-16T08:50:00Z
+    email_on_failure: True
+    email_on_retry: True
+    retries: 0
+    retry_delay: 0
+    provide_context: True
+
+aws:
+  aws_conn_id: 'AWS_dev'
+  service_name: 'secretsmanager'
+  region_name: 'eu-west-1'
+  SecretId: 'ftp_medallia'
+
+notebook_prepare_directory:
+  existing_cluster_id: '1217-074050-fief15'
+  notebook_task:
+    notebook_path: '/Users/aliaksandr.zaparozhtsau@burberry.com/TEST_CI_Import_NpsClosedLoop/Prepare_Directory'
+    base_parameters:
+      stage_dir: '/mnt/personal/azaparozhtsa/staging/nps/'
+      export_name: 'Closed_Loop'
+
+notebook_get_files_from_ftp:
+  existing_cluster_id: '1217-074050-fief15'
+  notebook_task:
+    notebook_path: '/Users/aliaksandr.zaparozhtsau@burberry.com/TEST_CI_Import_NpsClosedLoop/Get_Files_From_Ftp'
+    base_parameters:
+      export_name: 'Closed_Loop'
+      extract_group: 1
+      file_pattern: '([1-2][0-9][0-9][0-9][0-1][0-9][0-3][0-9]){1}_(\w+)*\.(\w+)*'
+      ftp_dir: 'Export/ClosedLoop'
+      process_date: '{{ ds_nodash }}'
+      stage_dir: '/mnt/personal/azaparozhtsa/staging/nps/'
+      tmp_dir: '/mnt/personal/azaparozhtsa/staging/nps/ClosedLoop/'
+
+notebook_process_data:
+  existing_cluster_id: '1217-074050-fief15'
+  notebook_task:
+    notebook_path: '/Users/aliaksandr.zaparozhtsau@burberry.com/TEST_CI_Import_NpsClosedLoop/Process_Data'
+    base_parameters:
+      db: 'azaparozhtsa'
+      table: 'closed_loop_historical'
+      extract_group: 1
+      file_pattern: '([1-2][0-9][0-9][0-9][0-1][0-9][0-3][0-9]){1}_(\w+)*\.(\w+)*'
+      partition_by: 'date_added'
+      restricted_cols: 'alert_assigned_to_names,alert_closed_by,alert_owner,rapid_response_sent_by'
+      separator: '|'
+      stage_dir: '/mnt/personal/azaparozhtsa/staging/nps/'
+      table_dir: '/mnt/personal/azaparozhtsa/prod/nps/Closed_Loop_Historical'
+      tmp_dir: '/mnt/personal/azaparozhtsa/staging/nps/Closed_Loop'
+
+
+
+done_dir: '/mnt/personal/azaparozhtsa/prod/nps/ClosedLoop_Historical/.Done/{{ ds_nodash }}'
