@@ -47,7 +47,7 @@ def plot_ftcs_convection_transfer(graph_index):
 
 
         x_arr = arange(h, l, h)
-        c_arr = arange(c_start, c_end + 0.0001, c_step)
+        c_arr = [0.1, 0.5, 1.0, 2.5] # arange(c_start, c_end + 0.0001, c_step)
 
 
         for c in c_arr:

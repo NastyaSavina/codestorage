@@ -43,7 +43,7 @@ def plot_ftcs_convection_transfer(graph_index):
 
 
         x_arr = arange(h, l, h)
-        c_arr = arange(c_start, c_end + 0.0001, c_step)
+        c_arr = [0.1, 0.5, 1.0, 2.5] # arange(c_start, c_end + 0.0001, c_step)
 
 
         for c in c_arr:
@@ -78,8 +78,6 @@ def plot_ftcs_convection_transfer(graph_index):
                     )
                     
                 if round(t, 5) in t_arr_print:
-                    print(c)
-                    print(t)
                     plt.figure(str(round(t, 2)))
                     plt.subplot(graph_index)
                     plt.plot([0, *x_arr, l], data.get_state(t))

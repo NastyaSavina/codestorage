@@ -9,7 +9,7 @@ for tau in [0.1, 0.2, 0.25]:
     y_eiler_arr = [y]
     z_eiler_arr = [z]
 
-    t_arr = arange(0, 10, tau)
+    t_arr = arange(0, 100, tau)
 
     for t in t_arr:
         print(f"t: {t}")
@@ -18,6 +18,7 @@ for tau in [0.1, 0.2, 0.25]:
         y_eiler_arr.append(y)
         z_eiler_arr.append(z)
 
-    plt.plot(y_eiler_arr, z_eiler_arr, label=f'эйлер tau: {round(tau, 2)}')
+    plt.plot(y_eiler_arr, z_eiler_arr, label=f'tau: {round(tau, 2)}')
 
+plt.legend()
 plt.show()
